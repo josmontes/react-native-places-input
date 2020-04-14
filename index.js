@@ -130,20 +130,24 @@ class PlacesInput extends Component {
               isLoading: true,
           },
           async () => {
-              const places = await fetch(
-                `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${
-                  this.state.query
-                }&key=${this.props.googleApiKey}&inputtype=textquery&language=${
-                  this.props.language
-                }&fields=${
-                  this.props.queryFields
-                }${this.buildLocationQuery()}${this.buildCountryQuery()}${this.buildTypesQuery()}${this.buildSessionQuery()}`
-              ).then(response => response.json());
+              try {
+                  const places = await fetch(
+                    `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${
+                      this.state.query
+                    }&key=${this.props.googleApiKey}&inputtype=textquery&language=${
+                      this.props.language
+                    }&fields=${
+                      this.props.queryFields
+                    }${this.buildLocationQuery()}${this.buildCountryQuery()}${this.buildTypesQuery()}${this.buildSessionQuery()}`
+                  ).then(response => response.json());
 
-              this.setState({
-                  isLoading: false,
-                  places: places.predictions,
-              });
+                  this.setState({
+                      isLoading: false,
+                      places: places.predictions,
+                  });
+              } catch(err) { 
+                  this.props.onError && this.props.onError(err);
+              }
           }
         );
     };
@@ -201,6 +205,7 @@ PlacesInput.propTypes = {
     iconResult: PropTypes.any,
     iconInput: PropTypes.any,
     language: PropTypes.string,
+    onError: Proptypes.func,
     onSelect: PropTypes.func,
     onChangeText: PropTypes.func,
     requiredCharactersBeforeSearch: PropTypes.number,
